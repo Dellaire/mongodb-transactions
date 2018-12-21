@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Application.class)
-public class TransactionTest {
+public class ExplicitTransactionTest {
 
     @Autowired
     private MongoClient mongoClient;
