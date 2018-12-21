@@ -1,17 +1,11 @@
 package mongodb.transactions;
 
-import com.mongodb.ClientSessionOptions;
-import com.mongodb.MongoClient;
-import com.mongodb.client.ClientSession;
-import mongodb.transactions.model.Data;
 import mongodb.transactions.persistence.DataRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
