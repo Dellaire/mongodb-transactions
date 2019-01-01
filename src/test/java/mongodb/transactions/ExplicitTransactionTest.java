@@ -1,80 +1,48 @@
 package mongodb.transactions;
 
-import com.mongodb.ClientSessionOptions;
-import com.mongodb.MongoClient;
-import com.mongodb.client.ClientSession;
-import mongodb.transactions.model.Data;
-import mongodb.transactions.persistence.DataRepository;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import mongodb.transactions.persistence.DataRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Application.class)
 public class ExplicitTransactionTest {
 
-    @Autowired
-    private MongoClient mongoClient;
+	@Autowired
+	private DataRepository dataRepository;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+	@Autowired
+	private TransactionalService transactionalService;
 
-    @Autowired
-    private DataRepository dataRepository;
+	@Test
+	public void doNotChangeDataIfTransactionIsNotCommitted() {
 
-    @Test
-    public void doNotChangeDataIfTransactionIsNotCommitted() {
+		this.dataRepository.deleteAll();
 
-        this.dataRepository.deleteAll();
+		try {
+			this.transactionalService.writeDataExplicitlyTransactional(() -> {
+				throw new RuntimeException();
+			});
+		} catch (Exception exception) {
+		}
 
-        ClientSessionOptions sessionOptions = ClientSessionOptions.builder().causallyConsistent(true).build();
-        ClientSession session = this.mongoClient.startSession(sessionOptions);
+		assertThat(this.dataRepository.count(), is(0L));
+	}
 
-        this.mongoTemplate.withSession(() -> session)
-                .execute(action -> {
+	@Test
+	public void changeDataIfTransactionIsCommitted() {
 
-                    session.startTransaction();
+		this.dataRepository.deleteAll();
 
-                    Data data = new Data();
-                    action.insert(data);
+		this.transactionalService.writeDataExplicitlyTransactional(() -> "");
 
-                    return data;
-                });
-
-        session.close();
-
-        assertThat(this.dataRepository.count(), is(0L));
-    }
-
-    @Test
-    public void changeDataIfTransactionIsCommitted() {
-
-        this.dataRepository.deleteAll();
-
-        ClientSessionOptions sessionOptions = ClientSessionOptions.builder().causallyConsistent(true).build();
-        ClientSession session = this.mongoClient.startSession(sessionOptions);
-
-        this.mongoTemplate.withSession(() -> session)
-                .execute(action -> {
-
-                    session.startTransaction();
-
-                    Data data = new Data();
-                    action.insert(data);
-
-                    session.commitTransaction();
-
-                    return data;
-                });
-
-        session.close();
-
-        assertThat(this.dataRepository.count(), is(1L));
-    }
+		assertThat(this.dataRepository.count(), is(1L));
+	}
 }
