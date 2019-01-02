@@ -37,7 +37,7 @@ public class ImplicitTransactionTest {
 	}
 
 	@Test
-	public void insertDataIfNErrorOccurs() {
+	public void insertDataIfNoErrorOccurs() {
 
 		this.dataRepository.deleteAll();
 

@@ -22,7 +22,7 @@ public class ExplicitTransactionTest {
 	private TransactionalService transactionalService;
 
 	@Test
-	public void doNotChangeDataIfTransactionIsNotCommitted() {
+	public void doNotInsertDataIfErrorOccurs() {
 
 		this.dataRepository.deleteAll();
 
@@ -37,7 +37,7 @@ public class ExplicitTransactionTest {
 	}
 
 	@Test
-	public void changeDataIfTransactionIsCommitted() {
+	public void insertDataIfNoErrorOccurs() {
 
 		this.dataRepository.deleteAll();
 
