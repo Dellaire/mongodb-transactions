@@ -53,21 +53,20 @@ public class TransactionalService {
 	public void writeDataExplicitlyTransactional(Supplier<String> errorSource) {
 
 		ClientSessionOptions sessionOptions = ClientSessionOptions.builder().causallyConsistent(true).build();
-		ClientSession session = this.mongoClient.startSession(sessionOptions);
+		try (ClientSession session = this.mongoClient.startSession(sessionOptions)) {
+			this.mongoTemplate.withSession(() -> session).execute(action -> {
 
-		this.mongoTemplate.withSession(() -> session).execute(action -> {
+				session.startTransaction();
 
-			session.startTransaction();
+				Data data = new Data();
+				action.insert(data);
+				errorSource.get();
 
-			Data data = new Data();
-			action.insert(data);
-			errorSource.get();
+				session.commitTransaction();
 
-			session.commitTransaction();
-
-			return data;
-		});
-
-		session.close();
+				return data;
+			});
+		} catch (Exception exception) {
+		}
 	}
 }
