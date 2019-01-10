@@ -17,7 +17,11 @@ Or just start a _Docker_ container:
 Connect with a client to the server and initiate the replica set and the collection:
 ```
 > mongo
+...
 > rs.initiate()
+> config = rs.config()
+> config.members[0].host = "localhost:27017"
+> rs.reconfig(config)
 > use test
 > db.createCollection("data")
 ```
