@@ -1,48 +1,46 @@
 package mongodb.transactions;
 
+import mongodb.transactions.persistence.DataRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import mongodb.transactions.persistence.DataRepository;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = Application.class)
+@SpringJUnitWebConfig(Application.class)
+@SpringBootTest
 public class ExplicitTransactionTest {
 
-	@Autowired
-	private DataRepository dataRepository;
+    @Autowired
+    private DataRepository dataRepository;
 
-	@Autowired
-	private TransactionalService transactionalService;
+    @Autowired
+    private TransactionalService transactionalService;
 
-	@Test
-	public void doNotInsertDataIfErrorOccurs() {
+    @Test
+    public void doNotInsertDataIfErrorOccurs() {
 
-		this.dataRepository.deleteAll();
+        this.dataRepository.deleteAll();
 
-		try {
-			this.transactionalService.writeDataExplicitlyTransactional(() -> {
-				throw new RuntimeException();
-			});
-		} catch (Exception exception) {
-		}
+        try {
+            this.transactionalService.writeDataExplicitlyTransactional(() -> {
+                throw new RuntimeException();
+            });
+        } catch (Exception exception) {
+        }
 
-		assertThat(this.dataRepository.count(), is(0L));
-	}
+        assertThat(this.dataRepository.count(), is(0L));
+    }
 
-	@Test
-	public void insertDataIfNoErrorOccurs() {
+    @Test
+    public void insertDataIfNoErrorOccurs() {
 
-		this.dataRepository.deleteAll();
+        this.dataRepository.deleteAll();
 
-		this.transactionalService.writeDataExplicitlyTransactional(() -> "");
+        this.transactionalService.writeDataExplicitlyTransactional(() -> "");
 
-		assertThat(this.dataRepository.count(), is(1L));
-	}
+        assertThat(this.dataRepository.count(), is(1L));
+    }
 }
