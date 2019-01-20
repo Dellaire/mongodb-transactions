@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+
+  mongodb:
+    image: mongo:4.0.5
+    ports:
+      - "27017:27017"
+    command: mongod --replSet rs
+
+  mongodb-init-rs:
+    image: mongo:4.0.5
+    depends_on:
+      - mongodb
+    command: mongo mongodb://mongodb:27017 --eval 'rs.initiate()'
+
+  mongodb-config-rs:
+    image: mongo:4.0.5
+    depends_on:
+      - mongodb-init-rs
+    command: mongo mongodb://mongodb:27017 --eval 'config = rs.config();config.members[0].host = "localhost:27017";rs.reconfig(config);db.createCollection("data")'
