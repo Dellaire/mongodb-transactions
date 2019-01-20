@@ -9,6 +9,7 @@ This repository contains examples, that demonstrate the usage of [multi document
 Start the server and create a replica set:
 ```
 > mongod --dbpath <path_to_data_folder> --replSet rs
+```
 
 Connect with a client to the server and initiate the replica set and the collection:
 ```
