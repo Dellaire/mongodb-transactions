@@ -13,34 +13,34 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest
 public class ImplicitTransactionTest {
 
-	@Autowired
-	private DataRepository dataRepository;
+    @Autowired
+    private DataRepository dataRepository;
 
-	@Autowired
-	private TransactionalService transactionalService;
+    @Autowired
+    private TransactionalService transactionalService;
 
-	@Test
-	public void doNotInsertDataIfErrorOccurs() {
+    @Test
+    public void doNotInsertDataIfErrorOccurs() {
 
-		this.dataRepository.deleteAll();
+        this.dataRepository.deleteAll();
 
-		try {
-			this.transactionalService.writeDataImplicitlyTransactional(() -> {
-				throw new RuntimeException();
-			});
-		} catch (Exception exception) {
-		}
+        try {
+            this.transactionalService.writeDataImplicitlyTransactional(() -> {
+                throw new RuntimeException();
+            });
+        } catch (Exception exception) {
+        }
 
-		assertThat(this.dataRepository.count(), is(0L));
-	}
+        assertThat(this.dataRepository.count(), is(0L));
+    }
 
-	@Test
-	public void insertDataIfNoErrorOccurs() {
+    @Test
+    public void insertDataIfNoErrorOccurs() {
 
-		this.dataRepository.deleteAll();
+        this.dataRepository.deleteAll();
 
-		this.transactionalService.writeDataImplicitlyTransactional(() -> "");
+        this.transactionalService.writeDataImplicitlyTransactional(() -> "");
 
-		assertThat(this.dataRepository.count(), is(1L));
-	}
+        assertThat(this.dataRepository.count(), is(1L));
+    }
 }
