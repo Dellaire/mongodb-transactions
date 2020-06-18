@@ -2,7 +2,7 @@ package mongodb.transactions;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -10,7 +10,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class MongodbConfiguration {
 
     @Bean
-    PlatformTransactionManager transactionManager(MongoDbFactory dbFactory) {
-        return new MongoTransactionManager(dbFactory);
+    PlatformTransactionManager transactionManager(MongoDatabaseFactory mongoDatabaseFactory) {
+        return new MongoTransactionManager(mongoDatabaseFactory);
     }
 }
