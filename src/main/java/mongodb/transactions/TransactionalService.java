@@ -2,13 +2,13 @@ package mongodb.transactions;
 
 import java.util.function.Supplier;
 
+import com.mongodb.client.MongoClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mongodb.ClientSessionOptions;
-import com.mongodb.MongoClient;
 import com.mongodb.client.ClientSession;
 
 import mongodb.transactions.model.Data;
