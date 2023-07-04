@@ -1,6 +1,8 @@
 package mongodb.transactions;
 
 import mongodb.transactions.persistence.DataRepository;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,25 +21,28 @@ public class ExplicitTransactionTest {
     @Autowired
     private TransactionalService transactionalService;
 
+    @BeforeAll
+    public static void startMongodb() {
+        MongodbTestConfiguration.startMongodb();
+    }
+
+    @BeforeEach
+    public void clearData() {
+        this.dataRepository.deleteAll();
+    }
+
     @Test
     public void doNotInsertDataIfErrorOccurs() {
 
-        this.dataRepository.deleteAll();
-
-        try {
-            this.transactionalService.writeDataExplicitlyTransactional(() -> {
-                throw new RuntimeException();
-            });
-        } catch (Exception exception) {
-        }
+        this.transactionalService.writeDataExplicitlyTransactional(() -> {
+            throw new RuntimeException();
+        });
 
         assertThat(this.dataRepository.count(), is(0L));
     }
 
     @Test
     public void insertDataIfNoErrorOccurs() {
-
-        this.dataRepository.deleteAll();
 
         this.transactionalService.writeDataExplicitlyTransactional(() -> "");
 
